@@ -13,6 +13,7 @@ import io.netty.util.AttributeKey;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import serializer.JsonSerializer;
+import serializer.KryoSerializer;
 import transport.RpcClient;
 
 /**
@@ -36,9 +37,16 @@ public class NettyRpcClient implements RpcClient {
                     @Override
                     protected void initChannel(SocketChannel ch) throws Exception {
                         ChannelPipeline pipeline = ch.pipeline();
-                        pipeline.addLast(new CommonDecoder())
-                                .addLast(new CommonEncoder(new JsonSerializer()))
+                        pipeline.addLast(new CommonDecoder()) // response 字节流 -> 对象
+                                .addLast(new CommonEncoder(new KryoSerializer())) // request 对象 -> 字节流
                                 .addLast(new NettyClientHandler());
+                        /*
+                             pipeline: encoder - decoder - handler
+                             outbound: encoder
+                             inbound: decoder -> handler
+                             流程： request对象 -> decoder -> request字节流 -> server响应response字节流
+                              -> decoder -> response对象 -> handler
+                        */
                     }
                 });
     }

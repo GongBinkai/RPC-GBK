@@ -25,7 +25,6 @@ public class CommonDecoder extends ReplayingDecoder {
     @Override
     protected void decode(ChannelHandlerContext channelHandlerContext, ByteBuf byteBuf, List<Object> list) throws Exception {
         int magicNumber = byteBuf.readInt();
-        System.out.println(magicNumber);
         if(magicNumber != MAGIC_NUMBER) {
                 logger.error("数据头错误无法识别：{} != {}", magicNumber, MAGIC_NUMBER);
             throw new RpcException(RpcError.UNKNOWN_PROTOCOL);
@@ -35,15 +34,16 @@ public class CommonDecoder extends ReplayingDecoder {
         Class<?> packageClass;
         if(packageCode == PackageType.REQUEST_PACK.getCode()) {
             packageClass = RpcRequest.class;
+            System.out.println("request-");
         } else if(packageCode == PackageType.RESPONSE_PACK.getCode()) {
             packageClass = RpcResponse.class;
+            System.out.println("response-");
         } else {
             logger.error("数据包无法识别：{}", magicNumber);
             throw new RpcException(RpcError.UNKNOWN_PACKAGE_TYPE);
         }
 
         int serializerCode = byteBuf.readInt();
-        System.out.println(serializerCode);
         CommonSerializer serializer = CommonSerializer.getByCode(serializerCode);
 
         int length = byteBuf.readInt();

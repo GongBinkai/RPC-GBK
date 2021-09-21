@@ -34,7 +34,19 @@ public class NettyServerHandler extends SimpleChannelInboundHandler<RpcRequest> 
             String interfaceName = rpcRequest.getInterfaceName();
             Object service = serviceRegistry.getService(interfaceName);
             Object result = requestHandler.handle(rpcRequest, service);
+            System.out.println("server res");
+            /*
+                注意：ctx.writeAndFlush()和ctx.channel().writeAndFlush()是有区别的
+                ctx.writeAndFlush()从当前节点往前查找out性质的handler
+                ctx.channel().writeAndFlush()从链表结尾开始往前查找out性质的handler
+             */
+
+//            加上channel 会从pipeline结尾回头搜索outbound
+//            ChannelFuture future = channelHandlerContext.channel().writeAndFlush(RpcResponse.success(result));
+
+//            不加channel 从inbound处理位置回头搜索outbound
             ChannelFuture future = channelHandlerContext.writeAndFlush(RpcResponse.success(result));
+
             future.addListener(ChannelFutureListener.CLOSE);
         } finally {
             ReferenceCountUtil.release(channelHandlerContext);

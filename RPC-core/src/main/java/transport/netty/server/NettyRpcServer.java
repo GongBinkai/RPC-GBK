@@ -12,6 +12,7 @@ import io.netty.handler.logging.LoggingHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import serializer.JsonSerializer;
+import serializer.KryoSerializer;
 import transport.RpcServer;
 
 /**
@@ -38,9 +39,20 @@ public class NettyRpcServer implements RpcServer {
                         // 责任链
                         protected void initChannel(SocketChannel ch) throws Exception {
                             ChannelPipeline pipeline = ch.pipeline();
-                            pipeline.addLast(new CommonEncoder(new JsonSerializer()));
-                            pipeline.addLast(new CommonDecoder());
-                            pipeline.addLast(new NettyServerHandler());
+                            pipeline.addLast(new CommonEncoder(new KryoSerializer())) // response 对象 -> 字节流
+                                    .addLast(new CommonDecoder()) // request 字节流 -> 对象
+                                    .addLast(new NettyServerHandler());
+                            /*
+                                pipeline: encoder - decoder - handler
+                                inbound: decoder -> handler
+                                outbound: encoder
+                                流程： 收到request -> decoder -> request字节流 -> handler
+                                 -> response对象 -> encoder -> response字节流
+
+                                 注意：ctx.writeAndFlush()和ctx.channel().writeAndFlush()是有区别的
+                                 ctx.writeAndFlush()从当前节点往前查找out性质的handler
+                                 ctx.channel().writeAndFlush()从链表结尾开始往前查找out性质的handler
+                             */
                         }
                     });
             ChannelFuture future = serverBootstrap.bind(port).sync();
