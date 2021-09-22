@@ -9,7 +9,7 @@ import transport.netty.client.NettyRpcClient;
 public class TestNettyClient {
     public static final String HOST = "127.0.0.1";
     public static void main(String[] args) {
-        RpcClient rpcClient = new NettyRpcClient(HOST, 9001);
+        RpcClient rpcClient = new NettyRpcClient();
         RpcClientProxy proxy = new RpcClientProxy(rpcClient);
         HelloService helloService = proxy.getProxy(HelloService.class);
         HelloObject helloObject = new HelloObject(1, "message test");

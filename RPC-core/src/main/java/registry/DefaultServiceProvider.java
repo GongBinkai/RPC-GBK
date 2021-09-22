@@ -13,14 +13,14 @@ import java.util.concurrent.ConcurrentHashMap;
  * Created by GBK on 2021/9/13
  * Use...
  */
-public class DefaultServiceRegistry implements ServiceRegistry {
-    private static final Logger logger = LoggerFactory.getLogger(DefaultServiceRegistry.class);
+public class DefaultServiceProvider implements ServiceProvider {
+    private static final Logger logger = LoggerFactory.getLogger(DefaultServiceProvider.class);
 
     private static final Map<String, Object> serviceMap = new ConcurrentHashMap<>();
     private static final Set<String> registeredService = ConcurrentHashMap.newKeySet();
 
     @Override
-    public <T> void register(T service) {
+    public <T> void addService(T service) {
         String serviceName = service.getClass().getCanonicalName();
         if(registeredService.contains(serviceName)) return;
         registeredService.add(serviceName);

@@ -1,10 +1,12 @@
-package server;
+package transport.socket.server;
 
 import entity.RpcRequest;
 import entity.RpcResponse;
 import enumeration.ResponseCode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import registry.DefaultServiceProvider;
+import registry.ServiceProvider;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -16,9 +18,16 @@ import java.lang.reflect.Method;
  */
 public class RequestHandler {
     private static final Logger logger = LoggerFactory.getLogger(RequestHandler.class);
+    private static final ServiceProvider serviceProvider;
 
-    public Object handle(RpcRequest rpcRequest, Object service) {
+    static {
+        serviceProvider = new DefaultServiceProvider();
+    }
+
+
+    public Object handle(RpcRequest rpcRequest) {
         Object result = null;
+        Object service = serviceProvider.getService(rpcRequest.getInterfaceName());
         try {
             result = invokeMethod(rpcRequest, service);
             logger.info("服务:{} 成功调用方法:{}", rpcRequest.getInterfaceName(), rpcRequest.getMethodName());

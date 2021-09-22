@@ -1,10 +1,10 @@
-package server;
+package transport.socket.server;
 
 import entity.RpcRequest;
 import entity.RpcResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import registry.ServiceRegistry;
+import registry.ServiceProvider;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -20,9 +20,9 @@ public class RequestHandlerThread implements Runnable{
 
     private Socket socket;
     private RequestHandler requestHandler;
-    private ServiceRegistry serviceRegistry;
+    private ServiceProvider serviceRegistry;
 
-    public RequestHandlerThread(Socket socket, RequestHandler requestHandler, ServiceRegistry serviceRegistry) {
+    public RequestHandlerThread(Socket socket, RequestHandler requestHandler, ServiceProvider serviceRegistry) {
         this.socket = socket;
         this.requestHandler = requestHandler;
         this.serviceRegistry = serviceRegistry;
@@ -33,8 +33,7 @@ public class RequestHandlerThread implements Runnable{
         try(ObjectInputStream objectInputStream = new ObjectInputStream(socket.getInputStream());
             ObjectOutputStream objectOutputStream = new ObjectOutputStream(socket.getOutputStream())) {
             RpcRequest rpcRequest = (RpcRequest) objectInputStream.readObject();
-            Object service = serviceRegistry.getService(rpcRequest.getInterfaceName());
-            Object result = requestHandler.handle(rpcRequest, service);
+            Object result = requestHandler.handle(rpcRequest);
             objectOutputStream.writeObject(RpcResponse.success(result));
             objectOutputStream.flush();
         } catch (IOException | ClassNotFoundException e) {

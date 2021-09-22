@@ -1,5 +1,7 @@
-import registry.DefaultServiceRegistry;
-import registry.ServiceRegistry;
+import enumeration.SerializerCode;
+import registry.DefaultServiceProvider;
+import registry.ServiceProvider;
+import serializer.CommonSerializer;
 import transport.netty.server.NettyRpcServer;
 
 /**
@@ -9,10 +11,8 @@ import transport.netty.server.NettyRpcServer;
 public class TestNettyServer {
     public static void main(String[] args) {
         HelloService helloService = new HelloServiceImpl();
-        ServiceRegistry registry = new DefaultServiceRegistry();
-//        System.out.println(registry.getClass().getDeclaringClass());
-        registry.register(helloService);
-        NettyRpcServer server = new NettyRpcServer();
-        server.start(9001);
+        NettyRpcServer server = new NettyRpcServer("127.0.0.1", 9001, SerializerCode.KRYO.getCode());
+        server.publishService(helloService, HelloService.class);
+        server.start();
     }
 }

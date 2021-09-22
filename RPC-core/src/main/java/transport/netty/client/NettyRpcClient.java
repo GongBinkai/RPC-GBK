@@ -10,11 +10,16 @@ import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.util.AttributeKey;
+import nacos.NacosServiceRegistry;
+import nacos.ServiceRegistry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import serializer.CommonSerializer;
 import serializer.JsonSerializer;
 import serializer.KryoSerializer;
 import transport.RpcClient;
+
+import java.net.InetSocketAddress;
 
 /**
  * Created by GBK on 2021/9/16
@@ -23,9 +28,14 @@ import transport.RpcClient;
 public class NettyRpcClient implements RpcClient {
     private static final Logger logger = LoggerFactory.getLogger(NettyRpcClient.class);
 
-    private String host;
-    private int port;
     private static final Bootstrap bootstrap;
+    private final ServiceRegistry serviceRegistry;
+    private final CommonSerializer serializer;
+
+    public NettyRpcClient() {
+        this.serviceRegistry = new NacosServiceRegistry();
+        this.serializer = CommonSerializer.getByCode(DEFAULT_SERIALIZER);
+    }
 
     static {
         EventLoopGroup group = new NioEventLoopGroup();
@@ -51,17 +61,12 @@ public class NettyRpcClient implements RpcClient {
                 });
     }
 
-    public NettyRpcClient(String host, int port) {
-        this.host = host;
-        this.port = port;
-    }
-
     @Override
     public Object sendRequest(RpcRequest rpcRequest) {
         try {
-            ChannelFuture future = bootstrap.connect(host, port).sync();
-            logger.info("客户端连接到服务器 {}:{}", host, port);
-            Channel channel = future.channel();
+            InetSocketAddress inetSocketAddress = serviceRegistry.lookupService(rpcRequest.getInterfaceName());
+            Channel channel = ChannelProvider.get(inetSocketAddress, serializer);
+            logger.info("客户端连接到服务器");
             if(channel != null) {
                 channel.writeAndFlush(rpcRequest).addListener(future1 -> {
                     if(future1.isSuccess()) {
