@@ -3,6 +3,8 @@ package serializer;
 import enumeration.SerializerCode;
 
 public interface CommonSerializer {
+    public int DEFAULT_SERIALIZER = 0;
+
     byte[] serialize(Object obj);
 
     Object deserialize(byte[] bytes, Class<?> clazz);

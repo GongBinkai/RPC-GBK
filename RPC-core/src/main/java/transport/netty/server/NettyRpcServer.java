@@ -2,8 +2,6 @@ package transport.netty.server;
 
 import coder.CommonDecoder;
 import coder.CommonEncoder;
-import enumeration.RpcError;
-import exception.RpcException;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
@@ -11,19 +9,15 @@ import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
+import io.netty.handler.timeout.IdleStateHandler;
 import nacos.NacosServiceRegistry;
-import nacos.ServiceRegistry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import registry.DefaultServiceProvider;
-import registry.ServiceProvider;
 import serializer.CommonSerializer;
-import serializer.JsonSerializer;
-import serializer.KryoSerializer;
 import transport.AbstractRpcServer;
-import transport.RpcServer;
 
-import java.net.InetSocketAddress;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Created by GBK on 2021/9/16
@@ -57,7 +51,8 @@ public class NettyRpcServer extends AbstractRpcServer {
                         // 责任链
                         protected void initChannel(SocketChannel ch) throws Exception {
                             ChannelPipeline pipeline = ch.pipeline();
-                            pipeline.addLast(new CommonEncoder(serializer)) // response 对象 -> 字节流
+                            pipeline.addLast(new IdleStateHandler(30, 0, 0, TimeUnit.SECONDS))
+                                    .addLast(new CommonEncoder(serializer)) // response 对象 -> 字节流
                                     .addLast(new CommonDecoder()) // request 字节流 -> 对象
                                     .addLast(new NettyServerHandler());
                             /*
