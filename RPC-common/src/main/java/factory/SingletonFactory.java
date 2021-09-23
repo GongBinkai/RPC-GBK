@@ -5,7 +5,7 @@ import java.util.Map;
 
 /**
  * 单例工厂
- * @author ziyang
+ * @author GBK
  */
 public class SingletonFactory {
 

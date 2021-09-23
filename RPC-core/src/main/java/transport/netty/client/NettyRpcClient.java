@@ -71,7 +71,9 @@ public class NettyRpcClient implements RpcClient {
     @Override
     public Object sendRequest(RpcRequest rpcRequest) {
         try {
+            // 从注册中心获取该服务的server地址
             InetSocketAddress inetSocketAddress = serviceRegistry.lookupService(rpcRequest.getInterfaceName());
+            // 通过地址建立channel
             Channel channel = ChannelProvider.get(inetSocketAddress, serializer);
             logger.info("客户端连接到服务器");
             if(channel != null) {

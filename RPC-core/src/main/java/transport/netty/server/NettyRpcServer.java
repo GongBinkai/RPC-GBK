@@ -51,7 +51,7 @@ public class NettyRpcServer extends AbstractRpcServer {
                         // 责任链
                         protected void initChannel(SocketChannel ch) throws Exception {
                             ChannelPipeline pipeline = ch.pipeline();
-                            pipeline.addLast(new IdleStateHandler(30, 0, 0, TimeUnit.SECONDS))
+                            pipeline.addLast(new IdleStateHandler(30, 0, 0, TimeUnit.SECONDS)) // reader超时 触发心跳
                                     .addLast(new CommonEncoder(serializer)) // response 对象 -> 字节流
                                     .addLast(new CommonDecoder()) // request 字节流 -> 对象
                                     .addLast(new NettyServerHandler());

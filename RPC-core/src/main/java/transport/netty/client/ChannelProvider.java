@@ -21,7 +21,7 @@ import java.util.concurrent.TimeUnit;
 
 /**
  * 用于获取 Channel 对象
- * @author ziyang
+ * @author GBK
  */
 public class ChannelProvider {
 
@@ -47,7 +47,7 @@ public class ChannelProvider {
                 /*自定义序列化编解码器*/
                 // RpcResponse -> ByteBuf
                 ch.pipeline().addLast(new CommonEncoder(serializer))
-                        .addLast(new IdleStateHandler(0, 5, 0, TimeUnit.SECONDS))
+                        .addLast(new IdleStateHandler(0, 5, 0, TimeUnit.SECONDS)) // 如果writer超时触发心跳
                         .addLast(new CommonDecoder())
                         .addLast(new NettyClientHandler());
             }

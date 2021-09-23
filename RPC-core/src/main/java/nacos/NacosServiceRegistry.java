@@ -11,10 +11,11 @@ import org.slf4j.LoggerFactory;
 
 import java.net.InetSocketAddress;
 import java.util.List;
+import java.util.Random;
 
 /**
  * Created by GBK on 2021/9/21
- * Use...
+ * Nacos中server的注册与查询
  */
 public class NacosServiceRegistry implements ServiceRegistry {
 
@@ -22,6 +23,7 @@ public class NacosServiceRegistry implements ServiceRegistry {
 
     private static final String SERVER_ADDR = "127.0.0.1:8848";
     private static final NamingService namingService;
+    private int index = 0;
 
     static {
         try {
@@ -42,11 +44,20 @@ public class NacosServiceRegistry implements ServiceRegistry {
         }
     }
 
+
     @Override
     public InetSocketAddress lookupService(String serviceName) {
         try {
             List<Instance> instances = namingService.getAllInstances(serviceName);
-            Instance instance = instances.get(0);
+
+            // 随机法
+            //Instance instance = instances.get(new Random().nextInt(instances.size()));
+
+            // 轮训法
+            if(index >= instances.size()) {
+                index %= instances.size();
+            }
+            Instance instance = instances.get(index++);
             return new InetSocketAddress(instance.getIp(), instance.getPort());
         } catch (NacosException e) {
             logger.error("获取服务时有错误发生:", e);

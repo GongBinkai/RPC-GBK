@@ -43,6 +43,12 @@ public class NettyClientHandler extends SimpleChannelInboundHandler<RpcResponse>
         ctx.close();
     }
 
+    /**
+     * client心跳机制触发器
+     * @param ctx
+     * @param evt
+     * @throws Exception
+     */
     @Override
     public void userEventTriggered(ChannelHandlerContext ctx, Object evt) throws Exception {
         if (evt instanceof IdleStateEvent) {

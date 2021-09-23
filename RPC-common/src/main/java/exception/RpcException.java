@@ -5,7 +5,7 @@ import enumeration.RpcError;
 /**
  * RPC调用异常
  *
- * @author ziyang
+ * @author GBK
  */
 public class RpcException extends RuntimeException {
 

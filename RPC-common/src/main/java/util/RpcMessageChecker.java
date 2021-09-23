@@ -11,7 +11,7 @@ import org.slf4j.LoggerFactory;
 /**
  * 检查响应与请求
  *
- * @author ziyang
+ * @author GBK
  */
 public class RpcMessageChecker {
 

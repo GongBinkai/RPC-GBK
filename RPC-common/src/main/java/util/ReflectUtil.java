@@ -13,7 +13,7 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
 /**
- * @author ziyang
+ * @author GBK
  */
 public class ReflectUtil {
 

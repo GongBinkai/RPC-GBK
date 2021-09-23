@@ -2,9 +2,7 @@ package transport.netty.server;
 
 import entity.RpcRequest;
 import entity.RpcResponse;
-import factory.ThreadPoolFactory;
 import io.netty.channel.ChannelFuture;
-import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.handler.timeout.IdleState;
@@ -12,9 +10,7 @@ import io.netty.handler.timeout.IdleStateEvent;
 import io.netty.util.ReferenceCountUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import transport.socket.server.RequestHandler;
-
-import java.util.concurrent.ExecutorService;
+import handler.RequestHandler;
 
 /**
  * Created by GBK on 2021/9/19
@@ -66,6 +62,12 @@ public class NettyServerHandler extends SimpleChannelInboundHandler<RpcRequest> 
         channelHandlerContext.close();
     }
 
+    /**
+     * server心跳触发器
+     * @param ctx
+     * @param evt
+     * @throws Exception
+     */
     @Override
     public void userEventTriggered(ChannelHandlerContext ctx, Object evt) throws Exception {
         if (evt instanceof IdleStateEvent) {
