@@ -53,7 +53,7 @@ public class NacosServiceRegistry implements ServiceRegistry {
             // 随机法
             //Instance instance = instances.get(new Random().nextInt(instances.size()));
 
-            // 轮训法
+            // 轮询法
             if(index >= instances.size()) {
                 index %= instances.size();
             }

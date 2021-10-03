@@ -4,6 +4,7 @@ import coder.CommonDecoder;
 import coder.CommonEncoder;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.*;
+import io.netty.channel.nio.NioEventLoop;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
@@ -41,8 +42,8 @@ public class NettyRpcServer extends AbstractRpcServer {
         try {
             ServerBootstrap serverBootstrap = new ServerBootstrap();
             serverBootstrap.group(bossGroup, workerGroup)
-                    .channel(NioServerSocketChannel.class)
-                    .handler(new LoggingHandler(LogLevel.INFO))
+                    .channel(NioServerSocketChannel.class) // IO模型
+                    .handler(new LoggingHandler(LogLevel.INFO)) // 打印日志
                     .option(ChannelOption.SO_BACKLOG, 256)
                     .option(ChannelOption.SO_KEEPALIVE, true)
                     .childOption(ChannelOption.TCP_NODELAY, true)
@@ -68,11 +69,14 @@ public class NettyRpcServer extends AbstractRpcServer {
                              */
                         }
                     });
+            // 绑定端口,调用 sync 方法阻塞知道绑定完成
             ChannelFuture future = serverBootstrap.bind(host, port).sync();
+            // 阻塞等待直到服务器Channel关闭 (closeFuture()方法获取Channel 的CloseFuture对象,然后调用sync()方法)
             future.channel().closeFuture().sync();
         } catch (InterruptedException e) {
             logger.error("启动服务器时有错误发生: ", e);
         } finally {
+            // 优雅关闭相关线程组资源
             bossGroup.shutdownGracefully();
             workerGroup.shutdownGracefully();
         }
