@@ -8,10 +8,8 @@ import enumeration.RpcError;
 import exception.RpcException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import java.net.InetSocketAddress;
 import java.util.List;
-import java.util.Random;
 
 /**
  * Created by GBK on 2021/9/21
@@ -37,6 +35,7 @@ public class NacosServiceRegistry implements ServiceRegistry {
     @Override
     public void register(String serviceName, InetSocketAddress inetSocketAddress) {
         try {
+//            System.out.println(serviceName);
             namingService.registerInstance(serviceName, inetSocketAddress.getHostName(), inetSocketAddress.getPort());
         } catch (NacosException e) {
             logger.error("注册服务时有错误发生:", e);

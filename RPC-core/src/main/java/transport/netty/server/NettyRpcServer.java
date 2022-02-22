@@ -73,6 +73,7 @@ public class NettyRpcServer extends AbstractRpcServer {
             ChannelFuture future = serverBootstrap.bind(host, port).sync();
             // 阻塞等待直到服务器Channel关闭 (closeFuture()方法获取Channel 的CloseFuture对象,然后调用sync()方法)
             future.channel().closeFuture().sync();
+            // serverBootstrap.bind(host, port).sync().channel().closeFuture().sync();
         } catch (InterruptedException e) {
             logger.error("启动服务器时有错误发生: ", e);
         } finally {

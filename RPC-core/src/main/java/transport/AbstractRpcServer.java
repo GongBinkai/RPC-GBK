@@ -35,7 +35,7 @@ public abstract class AbstractRpcServer implements RpcServer {
             logger.error("未设置序列化器");
             throw new RpcException(RpcError.SERIALIZER_NOT_FOUND);
         }
-        serviceProvider.addService(service);
+        serviceProvider.addService(service, serviceClass.getCanonicalName());
         serviceRegistry.register(serviceClass.getCanonicalName(), new InetSocketAddress(host, port));
         start();
     }

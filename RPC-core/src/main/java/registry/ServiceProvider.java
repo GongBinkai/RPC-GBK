@@ -5,6 +5,6 @@ package registry;
  * Use...
  */
 public interface ServiceProvider {
-    <T> void addService(T service);
+    <T> void addService(T service, String serviceName);
     Object getService(String serviceName);
 }

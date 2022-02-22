@@ -16,7 +16,7 @@ import java.net.Socket;
  * Created by GBK on 2021/9/16
  * Use...
  */
-public class RequestHandlerThread implements Runnable{
+public class RequestHandlerThread implements Runnable {
     private static final Logger logger = LoggerFactory.getLogger(RequestHandlerThread.class);
 
     private Socket socket;
